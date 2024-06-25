@@ -1,0 +1,37 @@
+def vigenere_one_time_pad(text, key):
+    # Function to encrypt or decrypt text using one-time pad Vigenère cipher
+    result = []
+    key_index = 0
+    
+    for char in text:
+        if char.isalpha():  # Process only alphabetic characters
+            key_shift = int(key[key_index])  # Get the shift amount from the key
+            key_index = (key_index + 1) % len(key)  # Move to the next key element
+            
+            if char.isupper():
+                shifted_char = chr((ord(char) - ord('A') + key_shift) % 26 + ord('A'))
+            else:
+                shifted_char = chr((ord(char) - ord('a') + key_shift) % 26 + ord('a'))
+            
+            result.append(shifted_char)
+        else:
+            result.append(char)  # Non-alphabetic characters remain unchanged
+    
+    return ''.join(result)
+
+def main():
+    plaintext = "Hello World!"
+    key = "3 19 5"
+    
+    # Encrypt plaintext
+    ciphertext = vigenere_one_time_pad(plaintext, key.split())
+    print(f"Plaintext:  {plaintext}")
+    print(f"Key:        {key}")
+    print(f"Ciphertext: {ciphertext}")
+    
+    # Decrypt ciphertext (for verification)
+    decrypted_text = vigenere_one_time_pad(ciphertext, key.split())
+    print(f"Decrypted text: {decrypted_text}")
+
+if __name__ == "__main__":
+    main()
