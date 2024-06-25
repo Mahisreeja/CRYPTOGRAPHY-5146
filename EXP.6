@@ -1,0 +1,52 @@
+def mod_inverse(a, m):
+    a = a % m
+    for x in range(1, m):
+        if (a * x) % m == 1:
+            return x
+    return None
+
+def affine_decrypt(cipher, a, b):
+    result = ""
+    a_inv = mod_inverse(a, 26)
+    if a_inv is None:
+        raise ValueError("Modular inverse of 'a' does not exist.")
+    
+    for char in cipher:
+        if char.isalpha():
+            char = char.upper()
+            c = ord(char) - ord('A')
+            p = (a_inv * (c - b)) % 26
+            result += chr(p + ord('A'))
+        else:
+            result += char
+    return result
+
+def find_a_b(c1, p1, c2, p2):
+    for a in range(1, 26):
+        if gcd(a, 26) == 1:
+            b = (p1 - a * c1) % 26
+            if (a * c2 + b) % 26 == p2:
+                return a, b
+    return None, None
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+
+def main():
+    cipher_text = input("Enter the ciphertext: ").strip().upper()
+    c1, c2 = ord('B') - ord('A'), ord('U') - ord('A')
+    p1, p2 = ord('E') - ord('A'), ord('T') - ord('A')
+    
+    a, b = find_a_b(c1, p1, c2, p2)
+    
+    if a is None or b is None:
+        print("Could not determine 'a' and 'b'.")
+    else:
+        print(f"Determined values: a = {a}, b = {b}")
+        decrypted_text = affine_decrypt(cipher_text, a, b)
+        print(f"The decrypted text is: {decrypted_text}")
+
+if __name__ == "__main__":
+    main()
