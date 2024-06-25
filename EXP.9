@@ -1,0 +1,92 @@
+import string
+
+def prepare_playfair_square(keyword):
+    # Convert keyword to uppercase and remove non-alpha characters
+    keyword = ''.join(filter(str.isalpha, keyword.upper()))
+    # Remove duplicates from keyword
+    keyword = ''.join(sorted(set(keyword), key=keyword.index))
+    
+    # Create the Playfair square
+    alphabet = string.ascii_uppercase.replace('J', '')  # Remove 'J' from alphabet
+    key_square = keyword
+    for char in alphabet:
+        if char not in key_square:
+            key_square += char
+    # Fill the Playfair square
+    playfair_square = [key_square[i:i+5] for i in range(0, 25, 5)]
+    
+    return playfair_square
+
+def find_position(playfair_square, letter):
+    # Find the position (row, col) of a letter in the Playfair square
+    for r in range(5):
+        for c in range(5):
+            if playfair_square[r][c] == letter:
+                return (r, c)
+    return None
+
+def decrypt_playfair(ciphertext, playfair_square):
+    # Decrypt the Playfair ciphertext
+    plaintext = []
+    
+    # Split ciphertext into digraphs
+    digraphs = []
+    i = 0
+    while i < len(ciphertext):
+        if i == len(ciphertext) - 1 or ciphertext[i] == ciphertext[i + 1]:
+            digraphs.append(ciphertext[i] + 'X')
+            i += 1
+        else:
+            digraphs.append(ciphertext[i] + ciphertext[i + 1])
+            i += 2
+    
+    # Decrypt each digraph
+    for digraph in digraphs:
+        # Find positions of letters in the digraph
+        char1, char2 = digraph[0], digraph[1]
+        r1, c1 = find_position(playfair_square, char1)
+        r2, c2 = find_position(playfair_square, char2)
+        
+        # Decrypt based on positions
+        if r1 == r2:
+            # Same row
+            decrypted_char1 = playfair_square[r1][(c1 - 1) % 5]
+            decrypted_char2 = playfair_square[r2][(c2 - 1) % 5]
+        elif c1 == c2:
+            # Same column
+            decrypted_char1 = playfair_square[(r1 - 1) % 5][c1]
+            decrypted_char2 = playfair_square[(r2 - 1) % 5][c2]
+        else:
+            # Forming a rectangle
+            decrypted_char1 = playfair_square[r1][c2]
+            decrypted_char2 = playfair_square[r2][c1]
+        
+        plaintext.append(decrypted_char1)
+        plaintext.append(decrypted_char2)
+    
+    return ''.join(plaintext)
+
+def main():
+    # Keyword used in the Playfair cipher
+    keyword = "PT109"
+    
+    # Ciphertext received at the Australian wireless station
+    ciphertext = """
+    KXJEY UREBE ZWEHE WRYTU HEYFS
+    KREHE GOYFI WTTTU OLKSY CAJPO
+    BOTEI ZONTX BYBNT GONEY CUZWR
+    GDSON SXBOU YWRHE BAAHY USEDQ
+    """
+    
+    # Prepare the Playfair square
+    playfair_square = prepare_playfair_square(keyword)
+    
+    # Decrypt the ciphertext
+    decrypted_message = decrypt_playfair(ciphertext.replace(' ', ''), playfair_square)
+    
+    # Print the decrypted message
+    print("Decrypted message:")
+    print(decrypted_message)
+
+if __name__ == "__main__":
+    main()
