@@ -1,0 +1,43 @@
+def decrypt_substitution(ciphertext):
+    # Frequency and common word analysis mappings
+    mapping = {
+        '†': 'e', '8': 't', '4': 'h', '5': 'o', '6': 'n', '0': 'i', '9': 's', '3': 'r',
+        '(': 'd', ';': 'l', '1': 'c', ')': 'u', ':': 'f', '2': 'm', ']': 'g', '?': 'p', '—': 'b',
+        '¶': 'w', '[': 'y', '‡': 'v', '5*': 'k', '9285': 'j', '4)': 'q', '2:*': 'a', '6†': 'x',
+        '485': 'th', '406': 'he', '81': 'e ', '1(': 'in', '—4': 'an', '9;': 'd ', '885': 'ed',
+        ';48': 's ', '8*;': 'on', '‡9;': 're', '1;8': 't ', '‡?': 'm', '4(‡': 'er', '†2(': 'l ',
+        '†85': 'at', '8†8': 'en', '85;': 'or', '†48': 'te', '(88': 'll', '88;': 'ar', '2(5': 'le',
+        '(‡?': 'ch', '†5;': 'se', '6*;': 'it', '†3(': 've', '‡1(': 'f ', '‡†5': 'of', '*;4': 'an',
+        '‡8;': 'st', '*8†': 'ne', '(‡9': 'to', '485†': 'thi', '4)4': 'ce', '†9;': 'not', '2(5*': 'for',
+        '††3': 'ha', '‡?3': 'by', '4(‡5': 'll ', '48†8': 'out', '8¶8': 'e o'
+    }
+    
+    plaintext = []
+    i = 0
+    while i < len(ciphertext):
+        found = False
+        for length in range(5, 1, -1):
+            if i + length <= len(ciphertext):
+                chunk = ciphertext[i:i+length]
+                if chunk in mapping:
+                    plaintext.append(mapping[chunk])
+                    i += length
+                    found = True
+                    break
+        if not found:
+            plaintext.append(ciphertext[i])
+            i += 1
+
+    return ''.join(plaintext)
+
+def main():
+    ciphertext = "53‡‡†305))6*;4826)4‡.)4‡);806*;48†8¶60))85;;]8*;:‡*8†83 (88)5*†;46(;88*96*?;8)*‡(;485);5*†2:*‡(;4956*2(5*—4)8¶8* ;4069285);)6†8)4‡‡;1(‡9;48081;8:8‡1;48†85;4)485†528806*81 (‡9;48;(88;4(‡?34;48)4‡;161;:188;‡?;"
+    
+    # Decrypt the ciphertext
+    decrypted_text = decrypt_substitution(ciphertext)
+    
+    print("Decrypted text:")
+    print(decrypted_text)
+
+if __name__ == "__main__":
+    main()
