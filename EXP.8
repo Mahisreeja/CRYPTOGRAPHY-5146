@@ -1,0 +1,62 @@
+import string
+
+def generate_cipher_from_keyword(keyword):
+    # Convert keyword to uppercase and remove duplicate letters
+    keyword = ''.join(sorted(set(keyword.upper()), key=keyword.upper().index))
+    
+    # Generate cipher alphabet
+    alphabet = string.ascii_uppercase
+    cipher_alphabet = keyword + ''.join([ch for ch in alphabet if ch not in keyword])
+    
+    return cipher_alphabet
+
+def create_mapping(cipher_alphabet):
+    # Create a mapping dictionary for encryption and decryption
+    mapping = {}
+    for i in range(26):
+        mapping[string.ascii_uppercase[i]] = cipher_alphabet[i]
+    
+    return mapping
+
+def encrypt(plaintext, mapping):
+    # Encrypt the plaintext using the provided mapping
+    ciphertext = []
+    for char in plaintext.upper():
+        if char in mapping:
+            ciphertext.append(mapping[char])
+        else:
+            ciphertext.append(char)  # Preserve non-alphabetic characters
+    
+    return ''.join(ciphertext)
+
+def decrypt(ciphertext, mapping):
+    # Decrypt the ciphertext using the provided mapping
+    plaintext = []
+    for char in ciphertext.upper():
+        if char in mapping.values():
+            plaintext.append(list(mapping.keys())[list(mapping.values()).index(char)])
+        else:
+            plaintext.append(char)  # Preserve non-alphabetic characters
+    
+    return ''.join(plaintext)
+
+def main():
+    keyword = "CIPHER"
+    plaintext = "Hello, World!"
+    
+    # Generate cipher alphabet from keyword
+    cipher_alphabet = generate_cipher_from_keyword(keyword)
+    
+    # Create mapping for encryption and decryption
+    mapping = create_mapping(cipher_alphabet)
+    
+    # Encrypt and decrypt the plaintext
+    encrypted_text = encrypt(plaintext, mapping)
+    decrypted_text = decrypt(encrypted_text, mapping)
+    
+    print("Original plaintext:", plaintext)
+    print("Encrypted ciphertext:", encrypted_text)
+    print("Decrypted plaintext:", decrypted_text)
+
+if __name__ == "__main__":
+    main()
