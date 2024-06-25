@@ -1,0 +1,35 @@
+def caesar_cipher(text, shift, encrypt=True):
+    def shift_char(c, shift_amount):
+        if c.isalpha():
+            base = ord('A') if c.isupper() else ord('a')
+            return chr((ord(c) - base + shift_amount) % 26 + base)
+        return c
+
+    if not encrypt:
+        shift = -shift
+    
+    return ''.join(shift_char(c, shift) for c in text)
+
+def main():
+    while True:
+        choice = input("Do you want to (e)ncrypt or (d)ecrypt? (Type 'exit' to quit): ").strip().lower()
+        if choice == 'exit':
+            break
+        if choice not in ('e', 'd'):
+            print("Invalid choice, please choose 'e' to encrypt or 'd' to decrypt.")
+            continue
+
+        text = input("Enter the text: ").strip()
+        shift = input("Enter the shift (1-25): ").strip()
+
+        if not shift.isdigit() or not (1 <= int(shift) <= 25):
+            print("Invalid shift value. It must be an integer between 1 and 25.")
+            continue
+
+        shift = int(shift)
+        encrypt = choice == 'e'
+        result = caesar_cipher(text, shift, encrypt)
+        print(f"The resulting text is: {result}")
+
+if __name__ == "__main__":
+    main()
