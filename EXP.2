@@ -1,0 +1,43 @@
+import string
+
+def generate_substitution_alphabet(key):
+    alphabet = string.ascii_uppercase
+    key_upper = ''.join(sorted(set(key.upper()), key=lambda x: key.upper().index(x)))
+    remaining_letters = ''.join([letter for letter in alphabet if letter not in key_upper])
+    substitution_alphabet = key_upper + remaining_letters
+    return substitution_alphabet
+
+def create_cipher_dict(substitution_alphabet):
+    alphabet = string.ascii_uppercase
+    cipher_dict = {alphabet[i]: substitution_alphabet[i] for i in range(26)}
+    decipher_dict = {substitution_alphabet[i]: alphabet[i] for i in range(26)}
+    return cipher_dict, decipher_dict
+
+def monoalphabetic_cipher(text, cipher_dict, encrypt=True):
+    def substitute_char(c, cipher_dict):
+        if c.upper() in cipher_dict:
+            return cipher_dict[c.upper()] if c.isupper() else cipher_dict[c.upper()].lower()
+        return c
+
+    return ''.join(substitute_char(c, cipher_dict if encrypt else {v: k for k, v in cipher_dict.items()}) for c in text)
+
+def main():
+    key = input("Enter the key for the substitution alphabet: ").strip()
+    substitution_alphabet = generate_substitution_alphabet(key)
+    cipher_dict, decipher_dict = create_cipher_dict(substitution_alphabet)
+    
+    while True:
+        choice = input("Do you want to (e)ncrypt or (d)ecrypt? (Type 'exit' to quit): ").strip().lower()
+        if choice == 'exit':
+            break
+        if choice not in ('e', 'd'):
+            print("Invalid choice, please choose 'e' to encrypt or 'd' to decrypt.")
+            continue
+
+        text = input("Enter the text: ").strip()
+        encrypt = choice == 'e'
+        result = monoalphabetic_cipher(text, cipher_dict, encrypt)
+        print(f"The resulting text is: {result}")
+
+if __name__ == "__main__":
+    main()
