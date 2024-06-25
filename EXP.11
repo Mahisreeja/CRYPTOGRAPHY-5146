@@ -1,0 +1,34 @@
+import math
+
+def factorial(n):
+    # Function to calculate factorial of a number
+    if n == 0 or n == 1:
+        return 1
+    else:
+        return n * factorial(n - 1)
+
+def approximate_power_of_2(num):
+    # Function to approximate the given number as a power of 2
+    power = math.log2(num)
+    return f"~2^{int(round(power))}"
+
+def possible_playfair_keys():
+    # Number of unique letters in the Playfair matrix
+    num_letters = 25  # Considering 'I' and 'J' as one letter
+    
+    # Calculate factorial of the number of letters
+    total_permutations = factorial(num_letters)
+    
+    # The Playfair cipher key is derived from permutations of 25 letters
+    return total_permutations
+
+def main():
+    # Calculate the number of possible keys for the Playfair cipher
+    num_keys = possible_playfair_keys()
+    
+    # Print the approximate number of keys as a power of 2
+    approximate_keys = approximate_power_of_2(num_keys)
+    print(f"Approximate number of possible keys for the Playfair cipher: {approximate_keys}")
+
+if __name__ == "__main__":
+    main()
