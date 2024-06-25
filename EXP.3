@@ -1,0 +1,74 @@
+import re
+
+def generate_playfair_matrix(key):
+    alphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
+    key = ''.join(sorted(set(key.upper()), key=lambda x: key.upper().index(x)))
+    matrix = ""
+    for char in key:
+        if char in alphabet:
+            matrix += char
+            alphabet = alphabet.replace(char, "")
+    matrix += alphabet
+    return [matrix[i:i+5] for i in range(0, 25, 5)]
+
+def find_position(matrix, char):
+    for row in range(5):
+        for col in range(5):
+            if matrix[row][col] == char:
+                return row, col
+    return None
+
+def playfair_cipher(text, key, encrypt=True):
+    matrix = generate_playfair_matrix(key)
+    text = re.sub(r'[^A-Z]', '', text.upper().replace('J', 'I'))
+    
+    # Prepare text in pairs
+    pairs = []
+    i = 0
+    while i < len(text):
+        if i == len(text) - 1:
+            pairs.append(text[i] + 'X')
+            i += 1
+        elif text[i] == text[i+1]:
+            pairs.append(text[i] + 'X')
+            i += 1
+        else:
+            pairs.append(text[i:i+2])
+            i += 2
+
+    cipher_text = ""
+    for pair in pairs:
+        row1, col1 = find_position(matrix, pair[0])
+        row2, col2 = find_position(matrix, pair[1])
+        if row1 == row2:
+            if encrypt:
+                cipher_text += matrix[row1][(col1 + 1) % 5] + matrix[row2][(col2 + 1) % 5]
+            else:
+                cipher_text += matrix[row1][(col1 - 1) % 5] + matrix[row2][(col2 - 1) % 5]
+        elif col1 == col2:
+            if encrypt:
+                cipher_text += matrix[(row1 + 1) % 5][col1] + matrix[(row2 + 1) % 5][col2]
+            else:
+                cipher_text += matrix[(row1 - 1) % 5][col1] + matrix[(row2 - 1) % 5][col2]
+        else:
+            cipher_text += matrix[row1][col2] + matrix[row2][col1]
+    
+    return cipher_text
+
+def main():
+    key = input("Enter the key for the Playfair cipher: ").strip()
+    while True:
+        choice = input("Do you want to (e)ncrypt or (d)ecrypt? (Type 'exit' to quit): ").strip().lower()
+        if choice == 'exit':
+            break
+        if choice not in ('e', 'd'):
+            print("Invalid choice, please choose 'e' to encrypt or 'd' to decrypt.")
+            continue
+
+        text = input("Enter the text: ").strip()
+        encrypt = choice == 'e'
+        result = playfair_cipher(text, key, encrypt)
+        print(f"The resulting text is: {result}")
+
+if __name__ == "__main__":
+    main()
