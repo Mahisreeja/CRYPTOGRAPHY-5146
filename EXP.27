@@ -1,0 +1,68 @@
+pip install pycryptodome
+from Crypto.PublicKey import RSA
+from Crypto.Util.number import getPrime, inverse
+import random
+
+# Function to generate RSA keys
+def generate_rsa_keys(bit_length=1024):
+    # Generate two large prime numbers p and q
+    p = getPrime(bit_length)
+    q = getPrime(bit_length)
+    
+    # Compute modulus n
+    n = p * q
+    
+    # Compute Euler's totient function phi(n)
+    phi_n = (p - 1) * (q - 1)
+    
+    # Choose e such that 1 < e < phi(n) and gcd(e, phi(n)) = 1
+    e = 65537  # Common choice for e
+    
+    # Compute d, the modular inverse of e mod phi(n)
+    d = inverse(e, phi_n)
+    
+    return (e, n), (d, n)
+
+# RSA encryption
+def rsa_encrypt(m, public_key):
+    e, n = public_key
+    return pow(m, e, n)
+
+# RSA decryption
+def rsa_decrypt(c, private_key):
+    d, n = private_key
+    return pow(c, d, n)
+
+# Create a dictionary of encrypted values
+def create_encryption_dictionary(public_key):
+    encryption_dict = {}
+    for m in range(26):
+        c = rsa_encrypt(m, public_key)
+        encryption_dict[c] = m
+    return encryption_dict
+
+# Simulate the attack
+def rsa_attack(ciphertext, encryption_dict):
+    return encryption_dict[ciphertext]
+
+# Main function
+def main():
+    # Generate RSA keys
+    public_key, private_key = generate_rsa_keys()
+    
+    # Create encryption dictionary
+    encryption_dict = create_encryption_dictionary(public_key)
+    
+    # Simulate encryption of a message
+    message = "HELLO"
+    ciphertext = [rsa_encrypt(ord(char) - ord('A'), public_key) for char in message]
+    
+    # Simulate the attack
+    decrypted_message = "".join(chr(rsa_attack(c, encryption_dict) + ord('A')) for c in ciphertext)
+    
+    print(f"Original message: {message}")
+    print(f"Encrypted message: {ciphertext}")
+    print(f"Decrypted message: {decrypted_message}")
+
+if __name__ == "__main__":
+    main()
